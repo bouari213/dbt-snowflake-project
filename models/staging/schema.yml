@@ -1,0 +1,89 @@
+version: 2
+
+models:
+  - name: stg_clients
+    description: "Modèle staging qui nettoie et standardise les données brutes des clients"
+    columns:
+      - name: id_client
+        description: "Identifiant unique du client"
+        tests:
+          - unique
+          - not_null
+      - name: email
+        description: "Adresse email du client en minuscules"
+        tests:
+          - unique
+          - not_null
+      - name: nom
+        description: "Nom du client en majuscules"
+        tests:
+          - not_null
+      - name: prenom
+        description: "Prénom du client"
+        tests:
+          - not_null
+      - name: ville
+        description: "Ville du client"
+      - name: date_inscription
+        description: "Date d'inscription du client"
+      - name: updated_at
+        description: "Date de dernière modification"
+
+  - name: stg_produits
+    description: "Modèle staging qui nettoie et standardise les données brutes des produits"
+    columns:
+      - name: id_produit
+        description: "Identifiant unique du produit"
+        tests:
+          - unique
+          - not_null
+      - name: nom_produit
+        description: "Nom du produit en majuscules"
+        tests:
+          - not_null
+      - name: categorie
+        description: "Catégorie du produit"
+        tests:
+          - not_null
+      - name: prix
+        description: "Prix du produit"
+        tests:
+          - not_null
+      - name: updated_at
+        description: "Date de dernière modification"
+
+  - name: stg_commandes
+    description: "Modèle staging qui nettoie et standardise les données brutes des commandes"
+    columns:
+      - name: id_commande
+        description: "Identifiant unique de la commande"
+        tests:
+          - unique
+          - not_null
+      - name: id_client
+        description: "Identifiant du client"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_clients')
+              field: id_client
+      - name: id_produit
+        description: "Identifiant du produit"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_produits')
+              field: id_produit
+      - name: statut
+        description: "Statut de la commande"
+        tests:
+          - accepted_values:
+              values: ['livree', 'en_cours', 'annulee']
+      - name: montant
+        description: "Montant de la commande"
+        tests:
+          - not_null
+      - name: date_commande
+        description: "Date de la commande"
+      - name: updated_at
+        description: "Date de dernière modification"
