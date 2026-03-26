@@ -1,0 +1,50 @@
+name: CI - Tests dbt sur UAT
+
+on:
+  pull_request:
+    branches:
+      - uat
+
+jobs:
+  dbt-ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v3
+
+      - name: Installation de Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Installation de dbt-snowflake
+        run: pip install dbt-snowflake
+
+      - name: Création du profiles.yml
+        run: |
+          mkdir -p ~/.dbt
+          cat > ~/.dbt/profiles.yml << EOF
+          dbt_snowflake_project:
+            target: uat
+            outputs:
+              uat:
+                type: snowflake
+                account: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+                user: ${{ secrets.SNOWFLAKE_USER }}
+                password: ${{ secrets.SNOWFLAKE_PASSWORD }}
+                role: ${{ secrets.SNOWFLAKE_ROLE }}
+                warehouse: ${{ secrets.SNOWFLAKE_UAT_WAREHOUSE }}
+                database: ${{ secrets.SNOWFLAKE_UAT_DATABASE }}
+                schema: UAT_STAGING
+                threads: 4
+          EOF
+
+      - name: Installation des packages dbt
+        run: dbt deps
+
+      - name: Run dbt sur UAT
+        run: dbt run --target uat
+
+      - name: Tests dbt sur UAT
+        run: dbt test --target uat
