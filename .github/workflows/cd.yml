@@ -12,6 +12,9 @@ jobs:
     steps:
       - name: Checkout du code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Installation de Python
         uses: actions/setup-python@v4
@@ -48,3 +51,11 @@ jobs:
 
       - name: Tests dbt en PROD
         run: dbt test --target prod
+
+      - name: Sync automatique uat vers main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout main
+          git merge uat --no-ff -m "chore: sync automatique uat vers main après déploiement PROD"
+          git push origin main
