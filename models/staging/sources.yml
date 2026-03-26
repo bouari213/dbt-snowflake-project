@@ -1,0 +1,13 @@
+version: 2
+
+sources:
+  - name: raw
+    database: RAW_DB
+    schema: RAW
+    tables:
+      - name: clients
+        description: "Table brute des clients"
+      - name: commandes
+        description: "Table brute des commandes"
+      - name: produits
+        description: "Table brute des produits"
